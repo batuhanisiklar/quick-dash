@@ -1,0 +1,24 @@
+﻿/* Dropdown menü düzeni */
+.dropdown-custom {
+    width: 120px; /* Genişlik küçültüldü */
+    padding: 5px 0; /* Yatay padding kaldırıldı, dikey padding azaltıldı */
+    font-size: 14px; /* Yazı boyutu küçültüldü */
+}
+
+/* Log Out öğesi */
+.dropdown-item-custom {
+    padding: 6px 10px; /* İç boşluklar küçültüldü */
+    font-size: 17px; /* Yazı boyutu daha küçük */
+    line-height: 1.2; /* Satır yüksekliği azaltıldı */
+}
+
+    /* İkon ve yazı boşluğu */
+    .dropdown-item-custom i {
+        margin-right: 5px; /* İkon ile yazı arası mesafe */
+    }
+
+/* Divider (çizgi) ayarı */
+.dropdown-divider {
+    margin: 4px 0; /* Çizginin üst-alt boşlukları */
+}
+

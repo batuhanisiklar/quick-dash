@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='Login/images/quickdash.ico') }}">
+    <title>QuickDash - System</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/buttons.bootstrap4.min.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dataTables.bootstrap4.min.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.bootstrap4.min.css') }}"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/adminlte.min.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dropdown.css') }}"/>
+    <style>
+       body {
+            overflow: hidden;
+            overflow-y: scroll;
+        }
+        body::-webkit-scrollbar {
+            display: none;
+        }
+        .info-box {
+            margin-bottom: 1%; /* Add space between info boxes */
+        }
+    </style>
+</head>
+<body class="hold-transition dark-mode sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
+<div class="wrapper">
+    <nav class="navbar navbar-expand navbar-primary navbar-dark">
+        <ul class="navbar-nav">
+            <li class="nav-item d-none d-sm-inline-block">
+                <a id="systemLink" href="#" class="nav-link">System</a>
+            </li>
+            <li class="nav-item d-none d-sm-inline-block">
+                <a id="logsLink" href="#" class="nav-link">Logs</a>
+            </li>
+            <li class="nav-item d-none d-sm-inline-block">
+                <a id="networkLink" href="#" class="nav-link">Network</a>
+            </li>
+            <li class="nav-item d-none d-sm-inline-block">
+                <a id="softwareLink" href="#" class="nav-link">Software</a>
+            </li>
+        </ul>
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item dropdown">
+                <a class="nav-link" data-toggle="dropdown" href="#"><i class="fa-solid fa-user"></i></a>
+                <div class="dropdown-menu dropdown-menu-right dropdown-custom">
+                    <a href="/logout" class="dropdown-item dropdown-item-custom">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i> Log Out
+                    </a>
+                </div>
+            </li>
+        </ul>
+    </nav>
+
+    <section class="content" style="margin-top: 1%">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-6 col-md-12">
+                    <div class="card card-primary card-outline">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="far fa-chart-bar"></i>
+                                CPU Usage
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div id="cpu_plot" style="height: 300px; width: 100%;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-12">
+                    <div class="card card-primary card-outline">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="far fa-chart-bar"></i>
+                                GPU Usage
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div id="gpu_plot" style="height: 300px; width: 100%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-1 mb-2">
+                {% set stats = [
+                    {'icon': 'fa fa-microchip', 'bg': 'bg-info', 'text': 'CPU Name', 'id': 'cpuName'},
+                    {'icon': 'fa-solid fa-gear', 'bg': 'bg-success', 'text': 'OS', 'id': 'os'},
+                    {'icon': 'far fa-copy', 'bg': 'bg-warning', 'text': 'Architecture', 'id': 'architecture'},
+                    {'icon': 'fa-sharp fa-solid fa-clock', 'bg': 'bg-danger', 'text': 'Uptime', 'id': 'uptime'}
+                ] %}
+                {% for stat in stats %}
+                    <div class="col-lg-3 col-md-6 col-sm-12">
+                        <div class="info-box shadow-sm">
+                            <span class="info-box-icon {{ stat.bg }}"><i class="{{ stat.icon }}"></i></span>
+                            <div class="info-box-content">
+                                <span class="info-box-text">{{ stat.text }}</span>
+                                <span class="info-box-number" id="{{ stat.id }}">0</span>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="row mt-1 mb-2">
+                {% set stats = [
+                    {'icon': 'fa-solid fa-laptop', 'bg': 'bg-info', 'text': 'Computer Name', 'id': 'name'},
+                    {'icon': 'far fa-flag', 'bg': 'bg-success', 'text': 'BIOS Version', 'id': 'biosVersion'},
+                    {'icon': 'fa-solid fa-industry', 'bg': 'bg-warning', 'text': 'Manufacturer', 'id': 'manufacturer'},
+                    {'icon': 'fa-solid fa-calendar-days', 'bg': 'bg-danger', 'text': 'Release Date', 'id': 'releaseDate'}
+                ] %}
+                {% for stat in stats %}
+                    <div class="col-lg-3 col-md-6 col-sm-12">
+                        <div class="info-box shadow-sm">
+                            <span class="info-box-icon {{ stat.bg }}"><i class="{{ stat.icon }}"></i></span>
+                            <div class="info-box-content">
+                                <span class="info-box-text">{{ stat.text }}</span>
+                                <span class="info-box-number" id="{{ stat.id }}">0</span>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="row mt-1 mb-2">
+                {% set stats = [
+                    {'icon': 'fa solid fa-desktop', 'bg': 'bg-info', 'text': 'GPU Name', 'id': 'gpuName'},
+                    {'icon': 'fa-sharp fa-solid fa-temperature-three-quarters', 'bg': 'bg-success', 'text': 'GPU Temperature', 'id': 'gpuTemperature'},
+                    {'icon': 'fa-solid fa-hard-drive', 'bg': 'bg-warning', 'text': 'Total Disk Capacity', 'id': 'totalDiskCapacity'},
+                    {'icon': 'fa-solid fa-memory', 'bg': 'bg-danger', 'text': 'Total Memory Capacity', 'id': 'totalMemoryCapacity'}
+                ] %}
+                {% for stat in stats %}
+                    <div class="col-lg-3 col-md-6 col-sm-12">
+                        <div class="info-box shadow-sm">
+                            <span class="info-box-icon {{ stat.bg }}"><i class="{{ stat.icon }}"></i></span>
+                            <div class="info-box-content">
+                                <span class="info-box-text">{{ stat.text }}</span>
+                                <span class="info-box-number" id="{{ stat.id }}">0</span>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Device Info</h3>
+                    </div>
+                    <div class="card-body">
+                        <table id="deviceTable" class="table table-bordered table-hover">
+                            <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>ID</th>
+                            </tr>
+                            </thead>
+                            <tbody id="deviceTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card card-danger">
+                    <div class="card-header">
+                        <h3 class="card-title">Disk Info</h3>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="diskInfo"
+                                style="min-height: 303px; height: 303px; max-height: 303px; max-width: 100%; "></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card card-danger">
+                    <div class="card-header">
+                        <h3 class="card-title">Memory Info</h3>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="memoryInfo"
+                                style="min-height: 303px; height: 303px; max-height: 303px; max-width: 100%; "></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Scripts -->
+<script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/adminlte.min.js') }}"></script>
+<script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap4.min.js"></script>
+<script src="{{ url_for('static', filename='js/sparkline.js') }}"></script>
+<script src="{{ url_for('static', filename='js/jquery.knob.min.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flot/0.8.3/jquery.flot.min.js"></script>
+<script src="{{ url_for('static', filename='js/jquery.flot.pie.js') }}"></script>
+<script src="{{ url_for('static', filename='js/jquery.flot.resize.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const totalPoints = 60;
+    const userId = parseInt(window.location.pathname.split('/').pop());
+    document.getElementById("systemLink").href = `/system/${userId}`;
+    document.getElementById("logsLink").href = `/logs/${userId}`;
+    document.getElementById("networkLink").href = `/network/${userId}`;
+    document.getElementById("softwareLink").href = `/software/${userId}`;
+
+    function updateChart(chart, data) {
+        requestAnimationFrame(() => {
+            chart.setData([{data: data}]);
+            chart.draw();
+        });
+    }
+
+    // Initialize empty arrays
+    let data1 = [];
+    let data2 = [];
+
+    const plotOptions = {
+        series: {
+            lines: {lineWidth: 2, show: true, fill: true}
+        },
+        yaxis: {
+            min: 0,
+            max: 100,
+            show: true,
+            font: {color: '#ffffff'}
+        },
+        xaxis: {
+            min: 0,
+            max: totalPoints - 1,
+            show: true,
+            font: {color: '#ffffff'}
+        }
+    };
+
+    const cpu_plot = $.plot('#cpu_plot', [{
+        data: data1,
+        color: '#008000'
+    }], plotOptions);
+
+    const gpu_plot = $.plot('#gpu_plot', [{
+        data: data2,
+        color: '#3c8dbc'
+    }], plotOptions);
+
+    function updateDataArray(dataArray, newValue) {
+        if (dataArray.length >= totalPoints) {
+            for (let i = 0; i < dataArray.length - 1; i++) {
+                dataArray[i] = [i, dataArray[i + 1][1]];
+            }
+            dataArray[totalPoints - 1] = [totalPoints - 1, newValue];
+        } else {
+            dataArray.push([dataArray.length, newValue]);
+        }
+        return dataArray;
+    }
+
+    const server_url = "{{ server_url }}";
+    const port = "{{ port }}";
+    // Initialize WebSocket connection
+    const ws = new WebSocket(`ws://${server_url}:${port}`);
+
+    ws.onopen = () => {
+        ws.send(userId.toString()); // Join the room with userId
+    };
+
+    ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        
+        const cpuUsage = data.system.cpu_usage.cpu
+        data1 = updateDataArray(data1, cpuUsage);
+        updateChart(cpu_plot, data1);
+        localStorage.setItem('cpuData', JSON.stringify(data1));
+
+        const gpuUsage = parseFloat(data.system.gpu_usage.gpu);
+        console.log(gpuUsage)
+        data2 = updateDataArray(data2, gpuUsage);
+        updateChart(gpu_plot, data2);
+        localStorage.setItem('gpuData', JSON.stringify(data2));
+
+        // Update info boxes
+        document.getElementById("cpuName").textContent = data.system.info_boxes.cpuName;
+        document.getElementById("os").textContent = data.system.info_boxes.os;
+        document.getElementById("architecture").textContent = data.system.info_boxes.architecture;
+        document.getElementById("uptime").textContent = data.system.info_boxes.uptime;
+
+        document.getElementById("name").textContent = data.system.info_boxes.name;
+        document.getElementById("biosVersion").textContent = data.system.info_boxes.biosVersion;
+        document.getElementById("manufacturer").textContent = data.system.info_boxes.manufacturer;
+        document.getElementById("releaseDate").textContent = data.system.info_boxes.releaseDate;
+
+        document.getElementById("gpuName").textContent = data.system.info_boxes.gpuName;
+        document.getElementById("gpuTemperature").textContent = data.system.info_boxes.gpuTemperature + "°C";
+        document.getElementById("totalDiskCapacity").textContent = data.system.info_boxes.totalDiskCapacity + " GB";
+        document.getElementById("totalMemoryCapacity").textContent = data.system.info_boxes.totalMemoryCapacity + " GB";
+
+        // Update device table
+        updateTable(deviceTable, data.system.connected_device);
+
+        // Update donut charts
+        updateDonutChart(diskChart, data.system.donut_chart.disk.used, data.system.donut_chart.disk.available);
+        updateDonutChart(memoryChart, data.system.donut_chart.memory.used, data.system.donut_chart.memory.available);
+    };
+
+    // Handle window/tab close or navigation
+    window.addEventListener('beforeunload', function (event) {
+        // Send a logout request to the server
+        navigator.sendBeacon('/logout');
+        ws.close(); // Close the WebSocket connection
+
+        // Clear localStorage data for CPU and GPU charts
+        localStorage.removeItem('cpuData');
+        localStorage.removeItem('gpuData');
+    });
+
+    // DataTable yapılandırması
+    const deviceTableConfig = {
+        scrollX: true,
+        responsive: true,
+        autoWidth: false,
+        columnDefs: [{width: "200px", targets: "_all"}],
+        order: [[0, "asc"]],
+        destroy: true,
+        language: {
+            emptyTable: "Veri bulunamadı"
+        }
+    };
+
+    // Global DataTable değişkeni
+    let deviceTable;
+
+    // HTML karakterlerini escape etme yardımcı fonksiyonu
+    const escapeHtml = (unsafe) => {
+        const htmlEscapes = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+        return unsafe.replace(/[&<>"']/g, char => htmlEscapes[char]);
+    };
+
+    // Tablo verilerini güncelleme fonksiyonu
+    const updateTable = (table, data) => {
+        table.clear();
+        data.forEach(item => {
+            const rowData = Object.values(item);
+            table.row.add(rowData);
+        });
+        table.draw(false);
+    };
+
+    // Tablo filtreleme fonksiyonu
+    const filterDeviceTable = () => {
+        const searchTerm = document.getElementById("deviceSearch").value;
+        deviceTable.search(searchTerm).draw();
+    };
+
+    // DataTable başlatma
+    $(document).ready(() => {
+        deviceTable = $("#deviceTable").DataTable(deviceTableConfig);
+    });
+
+    let diskChart = null;
+    let memoryChart = null;
+
+    function initializeDonutChart(canvasId) {
+        const ctx = document.getElementById(canvasId).getContext('2d');
+        const chartConfig = {
+            type: 'doughnut',
+            data: {
+                labels: ['Free', 'Used'],
+                datasets: [{
+                    data: [50, 50],
+                    backgroundColor: ['#00a65a', '#f56954'],
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                responsive: true,
+                plugins: {
+                    legend: {
+                        labels: {color: 'white'},
+                        onClick: (e) => e.stopPropagation()
+                    }
+                }
+            }
+        };
+        return new Chart(ctx, chartConfig);
+    }
+
+    function updateDonutChart(chart, freeSpace, usedSpace) {
+        chart.data.datasets[0].data = [freeSpace, usedSpace];
+        chart.update();
+    }
+
+    // Initialize charts
+    diskChart = initializeDonutChart('diskInfo');
+    memoryChart = initializeDonutChart('memoryInfo');
+
+</script>
+</body>
+</html>

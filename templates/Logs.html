@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='Login/images/quickdash.ico') }}">
+    <title>QuickDash - Logs</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/buttons.bootstrap4.min.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dataTables.bootstrap4.min.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.bootstrap4.min.css') }}"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/adminlte.min.css') }}"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dropdown.css') }}"/>
+
+    <!-- Core JS -->
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/adminlte.min.js') }}"></script>
+    <style>
+        body {
+             overflow: hidden; /* Hides the scrollbar */
+             overflow-y: scroll; /* Allows vertical scrolling */
+         }
+         body::-webkit-scrollbar {
+             display: none;
+         }
+     </style>
+</head>
+<body class="hold-transition dark-mode sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
+<div class="wrapper">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand navbar-primary navbar-dark">
+        <ul class="navbar-nav">
+            <li class="nav-item d-none d-sm-inline-block">
+                <a id="systemLink" href="#" class="nav-link">System</a>
+            </li>
+            <li class="nav-item d-none d-sm-inline-block">
+                <a id="logsLink" href="#" class="nav-link">Logs</a>
+            </li>
+            <li class="nav-item d-none d-sm-inline-block">
+                <a id="networkLink" href="#" class="nav-link">Network</a>
+            </li>
+            <li class="nav-item d-none d-sm-inline-block">
+                <a id="softwareLink" href="#" class="nav-link">Software</a>
+            </li>
+        </ul>
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item dropdown">
+                <a class="nav-link" data-toggle="dropdown" href="#"><i class="fa-solid fa-user"></i></a>
+                <div class="dropdown-menu dropdown-menu-right dropdown-custom">
+                    <a href="/logout" class="dropdown-item dropdown-item-custom">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i> Log Out
+                    </a>
+                </div>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Stats Cards -->
+    <div class="row mt-3 mb-4">
+        <div class="col-md-3 col-sm-6 col-12">
+            <div class="info-box shadow-sm">
+            <span class="info-box-icon bg-info">
+              <i class="far fa-copy"></i>
+            </span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Total Logs</span>
+                    <span class="info-box-number" id="totalLogs">0</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 col-sm-6 col-12">
+            <div class="info-box shadow-sm">
+            <span class="info-box-icon bg-success">
+              <i class="fa-solid fa-laptop-code"></i>
+            </span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Total Application Logs</span>
+                    <span class="info-box-number" id="appLogs">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6 col-12">
+            <div class="info-box shadow-sm">
+            <span class="info-box-icon bg-warning">
+              <i class="fa-solid fa-circle-info"></i>
+            </span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Total System Logs</span>
+                    <span class="info-box-number" id="sysLogs">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-sm-6 col-12">
+            <div class="info-box shadow-sm">
+            <span class="info-box-icon bg-danger">
+              <i class="fa fa-shield"></i>
+            </span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Total Security Logs</span>
+                    <span class="info-box-number" id="secLogs">0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <!-- Data Tables -->
+    <div class="row" style="margin-top: 0.5%;">
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h3 class="card-title">Application Logs</h3>
+                </div>
+                <div class="card-body">
+                    <table id="applicationTable" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>SourceName</th>
+                            <th>EventID</th>
+                            <th>Level</th>
+                            <th>Time Generated</th>
+                        </tr>
+                        </thead>
+                        <tbody id="applicationTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h3 class="card-title">System Logs</h3>
+                </div>
+                <div class="card-body">
+                    <table id="systemTable" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>Source Name</th>
+                            <th>EventID</th>
+                            <th>Level</th>
+                            <th>TimeGenerated</th>
+                        </tr>
+                        </thead>
+                        <tbody id="systemTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br/>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h3 class="card-title">Security Logs</h3>
+                </div>
+                <div class="card-body">
+                    <table id="securityTable" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>EventID</th>
+                            <th>EventType</th>
+                            <th>TimeGenerated</th>
+                            <th>Message</th>
+                        </tr>
+                        </thead>
+                        <tbody id="securityTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- JavaScript -->
+<script>
+    // DataTables configuration
+    const tableConfig = {
+        paging: true,
+        scrollX: true,
+        responsive: true,
+        autoWidth: false,
+        columnDefs: [{width: "200px", targets: "_all"}],
+        dom: "Bfrtip",
+        buttons: ["copy", "csv", "excel", "pdf", "print", "colvis"],
+        order: [[0, "asc"]],
+        destroy: true,
+    };
+
+    // Initialize DataTables
+    let applicationLogTable, systemLogTable, securityLogTable;
+
+    $(document).ready(function () {
+        applicationLogTable = $("#applicationTable").DataTable(tableConfig);
+        systemLogTable = $("#systemTable").DataTable(tableConfig);
+        securityLogTable = $("#securityTable").DataTable(tableConfig);
+    });
+
+    const userId = parseInt(window.location.pathname.split('/').pop());
+    document.getElementById("systemLink").href = `/system/${userId}`;
+    document.getElementById("logsLink").href = `/logs/${userId}`;
+    document.getElementById("networkLink").href = `/network/${userId}`;
+    document.getElementById("softwareLink").href = `/software/${userId}`;
+
+    const server_url = "{{ server_url }}";
+    const port = "{{ port }}";
+    // Initialize WebSocket connection
+    const ws = new WebSocket(`ws://${server_url}:${port}`);
+
+    ws.onopen = () => {
+        ws.send(userId.toString()); // Join the room with userId
+    };
+
+    ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+
+        // Update application logs
+        updateTable(applicationLogTable, data.logs.application_logs);
+        document.getElementById("appLogs").textContent = data.logs.application_logs.length;
+
+        // Update system logs
+        updateTable(systemLogTable, data.logs.system_logs);
+        document.getElementById("sysLogs").textContent = data.logs.system_logs.length;
+
+        // Update security logs
+        updateTable(securityLogTable, data.logs.security_logs);
+        document.getElementById("secLogs").textContent = data.logs.security_logs.length;
+
+        // Update total logs
+        document.getElementById("totalLogs").textContent =
+            data.logs.application_logs.length +
+            data.logs.system_logs.length +
+            data.logs.security_logs.length;
+    };
+
+    // Helper function to sanitize HTML
+    function escapeHtml(unsafe) {
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    // Update table data
+    function updateTable(table, data) {
+        table.clear();
+        data.forEach((item) => {
+            const rowData = Object.values(item).map((val) =>
+                escapeHtml(String(val))
+            );
+            table.row.add(rowData);
+        });
+        table.draw(false);
+    }
+</script>
+
+<!-- DataTables JS -->
+<script src="{{ url_for('static', filename='js/jquery.dataTables.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dataTables.bootstrap4.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dataTables.buttons.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dataTables.responsive.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/responsive.bootstrap4.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/buttons.bootstrap4.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/buttons.colVis.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/jszip.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/pdfmake.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/vfs_fonts.js') }}"></script>
+<script src="{{ url_for('static', filename='js/buttons.html5.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/buttons.print.min.js') }}"></script>
+</body>
+</html>

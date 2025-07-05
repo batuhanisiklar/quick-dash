@@ -1,0 +1,12 @@
+Flask
+Flask-SQLAlchemy
+python-dotenv
+psutil
+GPUtil
+wmi
+pywin32
+SQLAlchemy
+werkzeug
+websockets
+setuptools
+psycopg2-binary
