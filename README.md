@@ -76,7 +76,13 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-4. **Run the application**:
+4. **Run the server**:
+
+```bash
+python server.py
+```
+
+5. **Run the application**:
 
 ```bash
 python app.py
